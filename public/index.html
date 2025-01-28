@@ -33,14 +33,39 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .gulf-image {
+        .image-container {
+            position: relative;
             width: 100%;
             max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .gulf-image {
+            width: 100%;
             height: auto;
             border-radius: 15px;
-            margin: 20px auto;
             display: block;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .status-overlay.match {
+            background: rgba(152, 251, 152, 0.9);
+        }
+
+        .status-overlay.no-match {
+            background: rgba(255, 182, 193, 0.9);
         }
 
         #controls {
@@ -125,17 +150,18 @@
     <div class="container">
         <h1>🌊 Gulf of Mexico Watcher 🏖️</h1>
 
-        <img src="images/gulf.jpg" alt="Gulf of Mexico from Space" class="gulf-image">
-
-        <div class="beach-decoration">
-            🌴 🐚 🌊
+        <div class="image-container">
+            <img src="images/gulf.jpg" alt="Gulf of Mexico from Space" class="gulf-image">
+            <div id="status" class="status-overlay">Checking the waves...</div>
         </div>
 
         <div id="controls">
             <button onclick="togglePolling()" id="toggleButton">Stop Watching</button>
         </div>
 
-        <div id="status">Checking the waves...</div>
+        <div class="beach-decoration">
+            🌴 🐚 🌊
+        </div>
 
         <div class="footer">
             <p>
@@ -205,7 +231,7 @@
                     const statusDiv = document.getElementById('status');
                     const isMatch = currentName === "Gulf of Mexico";
 
-                    statusDiv.className = isMatch ? 'match' : 'no-match';
+                    statusDiv.className = `status-overlay ${isMatch ? 'match' : 'no-match'}`;
                     statusDiv.innerHTML = `
                     <div style="font-size: 1.2em; margin-bottom: 10px;">
                         ${isMatch ? '🌊 Still the Gulf of Mexico! 🌊' : '🚨 Name has changed! 🚨'}
