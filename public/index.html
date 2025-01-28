@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Gulf of Mexico Name Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background: linear-gradient(160deg, #87CEEB, #00BFFF);
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: #2c3e50;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .gulf-image {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 15px;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        button {
+            background: #FF6B6B;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background: #FF5252;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #status {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+
+        .match {
+            background: linear-gradient(160deg, #98FB98, #90EE90);
+            color: #2E8B57;
+            box-shadow: 0 2px 10px rgba(46, 139, 87, 0.2);
+        }
+
+        .no-match {
+            background: linear-gradient(160deg, #FFB6C1, #FF69B4);
+            color: #C71585;
+            box-shadow: 0 2px 10px rgba(199, 21, 133, 0.2);
+        }
+
+        .beach-decoration {
+            font-size: 2em;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .wave {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.35" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🌊 Gulf of Mexico Watcher 🏖️</h1>
+
+        <img src="images/gulf.jpg" alt="Gulf of Mexico from Space" class="gulf-image">
+
+        <div class="beach-decoration">
+            🌴 🐚 🌊
+        </div>
+
+        <div id="controls">
+            <button onclick="togglePolling()" id="toggleButton">Stop Watching</button>
+        </div>
+
+        <div id="status">Checking the waves...</div>
+    </div>
+
+    <div class="wave"></div>
+
+    <script>
+        const query = {
+            "operationName": "GazRecordPage_loadPage",
+            "variables": {
+                "appVisibility": "Public",
+                "gazId": 558730
+            },
+            "query": `query GazRecordPage_loadPage($appVisibility: AppVisibility!, $gazId: Int!) {
+                gazRecordEdit: activeEditForGazRecord(
+                    appVisibility: $appVisibility
+                    gazId: $gazId
+                ) {
+                    gazRecordSnapshot {
+                        officialGazNameSnapshot {
+                            value
+                        }
+                    }
+                }
+            }`
+        };
+
+        let pollingInterval;
+        let isPolling = true;
+
+        function togglePolling() {
+            const button = document.getElementById('toggleButton');
+            if (isPolling) {
+                clearInterval(pollingInterval);
+                button.textContent = 'Start Watching';
+                isPolling = false;
+            } else {
+                checkName();
+                pollingInterval = setInterval(checkName, 30000);
+                button.textContent = 'Stop Watching';
+                isPolling = true;
+            }
+        }
+
+        function checkName() {
+            fetch('/proxy', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(query)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const currentName = data.data.gazRecordEdit.gazRecordSnapshot.officialGazNameSnapshot.value;
+                    const statusDiv = document.getElementById('status');
+                    const isMatch = currentName === "Gulf of Mexico";
+
+                    statusDiv.className = isMatch ? 'match' : 'no-match';
+                    statusDiv.innerHTML = `
+                    <div style="font-size: 1.2em; margin-bottom: 10px;">
+                        ${isMatch ? '🌊 Still the Gulf of Mexico! 🌊' : '🚨 Name has changed! 🚨'}
+                    </div>
+                    <div>
+                        Current name: <strong>${currentName}</strong>
+                    </div>
+                    <div style="font-size: 0.9em; margin-top: 10px;">
+                        Last checked: ${new Date().toLocaleTimeString()}
+                    </div>
+                `;
+                })
+                .catch(error => {
+                    document.getElementById('status').innerHTML = `
+                    <div style="font-size: 1.2em;">
+                        🏊‍♂️ Oops! Caught in a riptide! 🌊
+                    </div>
+                    <div style="font-size: 0.9em; margin-top: 10px;">
+                        ${error.message}
+                    </div>
+                `;
+                    document.getElementById('status').className = 'no-match';
+                });
+        }
+
+        // Check immediately and then every 30 seconds
+        checkName();
+        pollingInterval = setInterval(checkName, 30000);
+    </script>
+</body>
+
+</html>

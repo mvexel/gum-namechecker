@@ -1,0 +1,19 @@
+version: "3"
+services:
+  name-checker:
+    build: .
+    ports:
+      - "3000:3000"
+    develop:
+      watch:
+        - path: ./package.json
+          action: rebuild
+        - path: ./package-lock.json
+          action: rebuild
+        - path: .
+          target: /usr/src/app
+          action: sync
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+    restart: unless-stopped

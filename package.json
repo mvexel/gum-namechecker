@@ -1,0 +1,22 @@
+{
+  "name": "name-checker",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-fetch": "^3.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:restart": "docker-compose restart",
+    "docker:rebuild": "docker-compose down && docker-compose build --no-cache && docker-compose up -d"
+  }
+}
