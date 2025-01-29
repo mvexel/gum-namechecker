@@ -237,23 +237,23 @@
 
                     statusDiv.className = `status-overlay ${isMatch ? 'match' : 'no-match'}`;
                     statusDiv.innerHTML = `
-                    <div style="font-size: 1.2em; margin-bottom: 10px;">
+                    <div style="font-size: clamp(1em, 2.5vw, 1.2em); margin-bottom: 10px;">
                         ${isMatch ? '🌊 Still the Gulf of Mexico! 🌊' : '🚨 Name has changed! 🚨'}
                     </div>
-                    <div>
+                    <div style="font-size: clamp(0.85em, 2vw, 1em);">
                         Current name: <strong>${currentName}</strong>
                     </div>
-                    <div style="font-size: 0.9em; margin-top: 10px;">
+                    <div style="font-size: clamp(0.75em, 1.8vw, 0.9em); margin-top: 10px;">
                         Last checked: ${new Date().toLocaleTimeString()}
                     </div>
                 `;
                 })
                 .catch(error => {
                     document.getElementById('status').innerHTML = `
-                    <div style="font-size: 1.2em;">
+                    <div style="font-size: clamp(1em, 2.5vw, 1.2em);">
                         🏊‍♂️ Oops! Caught in a riptide! 🌊
                     </div>
-                    <div style="font-size: 0.9em; margin-top: 10px;">
+                    <div style="font-size: clamp(0.75em, 1.8vw, 0.9em); margin-top: 10px;">
                         ${error.message}
                     </div>
                 `;
